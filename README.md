@@ -8,4 +8,9 @@ post-docs, central banks, international organizations, government, think-tanks, 
 
 This GitHub repository hosts the codes for replicating the analysis. A one-click code for running the full sequence of scripts can be found in the dofile `_master.do`.
 
+Notes:
+* As the way in which placements are reported is heterogeneous across departments, the text classification algorithm is also department-specific. For instance, 
+some departments distinctively tag their tenure-track placements with the relevant job title (i.e., *Assistant Professor*), whereas in other cases tenure-track placements must be identified based on the abscence of tags that identify non-tenure-track academic placements (e.g., post-docs).
+* Chicago and Northwestern already report their placements following a similar classification to ours. In these two cases, placements are directly sorted into our categories without using the text classification algorithm.
+
 
