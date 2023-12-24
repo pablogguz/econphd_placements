@@ -4,7 +4,7 @@
 # Author: Pablo Garcia-Guzman
 
 # This script: 
-#   Scrapes data for UCLA
+#   Scrapes data for Duke
 #--------------------------------------------------------------#
 
 #------------------------- 0. Load packages, set paths ------------------------#
@@ -23,8 +23,7 @@ packages_to_load <- c("rvest",
                       "scales",
                       "webshot",
                       "htmlwidgets",
-                      "httr",
-                      "purrr") 
+                      "httr") 
 
 package.check <- lapply(
   packages_to_load,
@@ -51,36 +50,42 @@ fig <- paste0(dir, "2_figures/")
 #---------------------------- 1. Script starts --------------------------------#
 
 # Load data ---- 
-url <- "https://economics.ucla.edu/graduate/graduate-profiles/graduate-placement-history/"
+url <- "https://econ.duke.edu/phd-program/prospective-students/placements"
 web <- read_html(url)
 
-# Extract h4 elements (years) and the tables that follow them
-years <- web %>% html_nodes("h4")
-table <- web %>% html_nodes("table")
+# Extract 'a' elements of class 'normal' which contain the years
+year_links <- web %>% html_nodes("a.normal") %>% html_text()
+
+# Process the extracted years if necessary (e.g., extract year numbers)
+years <- str_extract_all(year_links, "\\d{4}") %>% unlist()
+
+# Extract tables with class 'tablesaw tablesaw-stack'
+placement_tables <- web %>% html_nodes("table.tablesaw.tablesaw-stack")
 
 # Initialize an empty data frame for the final output
-final_data <- data.frame(year = character(), name = character(), placement = character(), stringsAsFactors = FALSE)
+final_data <- data.frame()
 
 # Iterate through each year and corresponding table
 for (i in seq_along(years)) {
-  # Extract the year, assuming it's in a four-digit format
-  year_text <- years[i] %>% html_text() %>% str_trim()
-  year <- str_extract(year_text, "\\d{4}")
+  year <- years[i]
+  table <- placement_tables[i] %>% html_table(fill = TRUE)
   
-  table <- tables[i] %>% html_table(fill = TRUE)
-  
-  # Check if the table is not empty and has more than one row (header and data)
-  if (!is.null(table) && nrow(table[[1]]) > 1) {
-    table_data <- table[[1]]
-
+  # Check if the table is not empty
+  if (!is.null(table) && length(table) > 0 && nrow(table[[1]]) > 0) {
     # Add the year to the table and combine with the final data
-    table_data <- table_data %>% mutate(year = year)
+    table_data <- table[[1]] %>% mutate(year = year)
     final_data <- rbind(final_data, table_data)
   }
 }
 
-final_data <- final_data %>%
-  rename(placement = X2,
-         name = X1)
+# View the final data frame
+print(final_data)
+
+colnames(final_data) <- tolower(colnames(final_data))
+
+final_data <- final_data %>% 
+  mutate(placement = paste0(position, ", ", institution)) %>%
+  select(-position, -institution)
+
 # Save ----
-write_xlsx(final_data, paste0(data, "/us/raw/ucla_raw.xlsx"))
+write_xlsx(final_data, paste0(data, "/us/raw/duke_raw.xlsx"))

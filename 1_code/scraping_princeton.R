@@ -4,7 +4,7 @@
 # Author: Pablo Garcia-Guzman
 
 # This script: 
-#   Scrapes data for UPenn
+#   Scrapes data for Princeton
 #--------------------------------------------------------------#
 
 #------------------------- 0. Load packages, set paths ------------------------#
@@ -51,36 +51,20 @@ fig <- paste0(dir, "2_figures/")
 #---------------------------- 1. Script starts --------------------------------#
 
 # Load data ---- 
-web <- "https://economics.sas.upenn.edu/graduate/prospective-students/placement-information"
-web <- read_html(web)
+url <- "https://economics.princeton.edu/graduate-program/job-market-and-placements/statistics-on-past-placements/"
 
-names <- web %>% html_nodes("a,p") %>% html_text()
-names <- as.data.frame(names)
-names <- names %>% filter(row_number() > 44) # removed unused lines
-names <- names %>% filter(row_number() < 290) # removed unused lines
+web <- read_html(url)
 
-df <- names %>%
-  rename(name = names)
+# Extract the table
+table <- web %>% html_table()
 
-# Identify and carry forward the year
-df <- df %>%
-  mutate(year = ifelse(grepl("PLACEMENT [0-9]{4}-[0-9]{4}", name), gsub("PLACEMENT ([0-9]{4})-[0-9]{4}", "\\1", name), NA)) %>%
-  fill(year, .direction = "down") %>%
-  filter(!is.na(year) & !grepl("PLACEMENT [0-9]{4}-[0-9]{4}", name)) %>%
-  mutate(year = as.numeric(year) + 1) 
-
-# Separate the name into 'name' and 'placement', handling both "-" and "–"
-df <- df %>%
-  separate(name, into = c("name", "placement"), sep = "-|–", extra = "merge") %>%
-  drop_na() %>%
-  mutate(placement = if_else(str_detect(placement, "^\\b(\\w+|\\w+ \\w+) -"), 
-                             str_replace(placement, "^\\b(\\w+|\\w+ \\w+) - ", ""), 
-                             placement))
-
-# Correct bugs
-df$name[156] <- paste(df$name[156], "young Shim ")
-df$placement[156] <- paste0("University of California, San Diego (Post-Doc)")
-
+final_data <- table[[1]] %>%
+  mutate(year = substr(Year,6,9),
+         placement = ifelse(`Position/Title` != "", paste0(`Position/Title`, ", ", Institution), Institution),
+         field = Field) %>%
+  select(year, placement, field) %>%
+  filter(year != "") 
+  
 # Save ----
-write_xlsx(df, paste0(data, "/us/raw/upenn_raw.xlsx"))
+write_xlsx(final_data, paste0(data, "/us/raw/princeton_raw.xlsx"))
 

@@ -4,7 +4,7 @@
 # Author: Pablo Garcia-Guzman
 
 # This script: 
-#   Scrapes data for UCLA
+#   Scrapes data for NYU
 #--------------------------------------------------------------#
 
 #------------------------- 0. Load packages, set paths ------------------------#
@@ -51,36 +51,58 @@ fig <- paste0(dir, "2_figures/")
 #---------------------------- 1. Script starts --------------------------------#
 
 # Load data ---- 
-url <- "https://economics.ucla.edu/graduate/graduate-profiles/graduate-placement-history/"
+url <- "https://as.nyu.edu/departments/econ/job-market/placements.html"
 web <- read_html(url)
 
 # Extract h4 elements (years) and the tables that follow them
-years <- web %>% html_nodes("h4")
-table <- web %>% html_nodes("table")
+years <- web %>% html_nodes("summary")
+tables <- web %>% html_nodes("details")
+
+# Keep only data from 2012 onwards (data for previous periods is problematic)
+years <- years[1:11]
+tables <- tables[1:11]
 
 # Initialize an empty data frame for the final output
-final_data <- data.frame(year = character(), name = character(), placement = character(), stringsAsFactors = FALSE)
+final_data <- data.frame(year = character(), placement = character(), stringsAsFactors = FALSE)
 
 # Iterate through each year and corresponding table
 for (i in seq_along(years)) {
   # Extract the year, assuming it's in a four-digit format
   year_text <- years[i] %>% html_text() %>% str_trim()
-  year <- str_extract(year_text, "\\d{4}")
+  year <- as.numeric(str_extract(year_text, "\\d{4}"))
+  year <- year + 1
   
-  table <- tables[i] %>% html_table(fill = TRUE)
-  
-  # Check if the table is not empty and has more than one row (header and data)
-  if (!is.null(table) && nrow(table[[1]]) > 1) {
-    table_data <- table[[1]]
+  full_text <- tables[[i]] %>% html_nodes("p") %>% html_text() %>% str_trim()
+  full_text <- full_text[[2]]
+  placement <- strsplit(full_text, "\n")[[1]]
 
-    # Add the year to the table and combine with the final data
-    table_data <- table_data %>% mutate(year = year)
-    final_data <- rbind(final_data, table_data)
-  }
+  # Add to final data
+  final_data <- rbind(final_data, data.frame(year, placement, stringsAsFactors = FALSE))
+  
 }
 
-final_data <- final_data %>%
-  rename(placement = X2,
-         name = X1)
+# Clean 
+final_data <- final_data %>% 
+  mutate(placement = str_trim(placement)) %>%
+  # Split the placement column and extract the repeat factor
+  mutate(
+    repeat_factor = ifelse(grepl("\\(x[0-9]+\\)", placement), 
+                           as.numeric(sub(".*\\(x([0-9]+)\\).*", "\\1", placement)), 
+                           1),
+    placement = gsub(" \\(x[0-9]+\\)", "", placement)
+  ) %>%
+  mutate(placement = gsub("(x2)", "", x = placement, fixed = TRUE)) %>%
+  mutate(placement = str_trim(placement))
+
+# Expand the data frame based on the repeat factor
+final_data <- final_data[rep(row.names(final_data), final_data$repeat_factor), ]
+row.names(final_data) <- NULL
+
+final_data$repeat_factor <- NULL
+
 # Save ----
-write_xlsx(final_data, paste0(data, "/us/raw/ucla_raw.xlsx"))
+write_xlsx(final_data, paste0(data, "/us/raw/nyu_raw.xlsx"))
+
+
+
+

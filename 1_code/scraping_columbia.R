@@ -4,7 +4,7 @@
 # Author: Pablo Garcia-Guzman
 
 # This script: 
-#   Scrapes data for UCLA
+#   Scrapes data for Columbia
 #--------------------------------------------------------------#
 
 #------------------------- 0. Load packages, set paths ------------------------#
@@ -23,8 +23,7 @@ packages_to_load <- c("rvest",
                       "scales",
                       "webshot",
                       "htmlwidgets",
-                      "httr",
-                      "purrr") 
+                      "httr") 
 
 package.check <- lapply(
   packages_to_load,
@@ -51,12 +50,12 @@ fig <- paste0(dir, "2_figures/")
 #---------------------------- 1. Script starts --------------------------------#
 
 # Load data ---- 
-url <- "https://economics.ucla.edu/graduate/graduate-profiles/graduate-placement-history/"
+url <- "https://econ.columbia.edu/phd/placement/"
 web <- read_html(url)
 
-# Extract h4 elements (years) and the tables that follow them
-years <- web %>% html_nodes("h4")
-table <- web %>% html_nodes("table")
+# Extract h3 elements (years) and the tables that follow them
+years <- web %>% html_nodes("h3 strong")
+tables <- web %>% html_nodes("h3 + table") 
 
 # Initialize an empty data frame for the final output
 final_data <- data.frame(year = character(), name = character(), placement = character(), stringsAsFactors = FALSE)
@@ -71,8 +70,10 @@ for (i in seq_along(years)) {
   
   # Check if the table is not empty and has more than one row (header and data)
   if (!is.null(table) && nrow(table[[1]]) > 1) {
-    table_data <- table[[1]]
-
+    # Set the names of the table to be the first row and then remove the first row
+    names(table[[1]]) <- as.character(unlist(table[[1]][1, ]))
+    table_data <- table[[1]][-1, ]
+    
     # Add the year to the table and combine with the final data
     table_data <- table_data %>% mutate(year = year)
     final_data <- rbind(final_data, table_data)
@@ -80,7 +81,13 @@ for (i in seq_along(years)) {
 }
 
 final_data <- final_data %>%
-  rename(placement = X2,
-         name = X1)
+  rename(placement = Placement,
+         name = Candidate,
+         field = Fields)
+
 # Save ----
-write_xlsx(final_data, paste0(data, "/us/raw/ucla_raw.xlsx"))
+write_xlsx(final_data, paste0(data, "/us/raw/columbia_raw.xlsx"))
+
+
+
+

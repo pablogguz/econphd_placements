@@ -4,7 +4,7 @@
 # Author: Pablo Garcia-Guzman
 
 # This script: 
-#   Scrapes data for UPenn
+#   Scrapes data for Harvard
 #--------------------------------------------------------------#
 
 #------------------------- 0. Load packages, set paths ------------------------#
@@ -51,36 +51,38 @@ fig <- paste0(dir, "2_figures/")
 #---------------------------- 1. Script starts --------------------------------#
 
 # Load data ---- 
-web <- "https://economics.sas.upenn.edu/graduate/prospective-students/placement-information"
-web <- read_html(web)
+url <- "https://economics.harvard.edu/placement"
+web <- read_html(url)
 
-names <- web %>% html_nodes("a,p") %>% html_text()
-names <- as.data.frame(names)
-names <- names %>% filter(row_number() > 44) # removed unused lines
-names <- names %>% filter(row_number() < 290) # removed unused lines
+# Extract the table
+table <- web %>% html_table()
 
-df <- names %>%
-  rename(name = names)
+current_year <- 2023
+modified_tables <- list()
 
-# Identify and carry forward the year
-df <- df %>%
-  mutate(year = ifelse(grepl("PLACEMENT [0-9]{4}-[0-9]{4}", name), gsub("PLACEMENT ([0-9]{4})-[0-9]{4}", "\\1", name), NA)) %>%
-  fill(year, .direction = "down") %>%
-  filter(!is.na(year) & !grepl("PLACEMENT [0-9]{4}-[0-9]{4}", name)) %>%
-  mutate(year = as.numeric(year) + 1) 
+for (i in 1:length(table)) {
+  year <- current_year - (i - 1)
+  df <- mutate(table[[i]], year = year)
+  
+  # Rename columns for years 2018 and earlier
+  if (year <= 2018) {
+    df <- df %>%
+      rename(name = X1, field = X2, placement = X3) %>%
+      select(-starts_with("X"))
+  } else {
+    df <- df %>%
+      rename(name = Name, field = `Fields of Study`, placement = Placement)
+  }
+  
+  modified_tables[[i]] <- df
+}
 
-# Separate the name into 'name' and 'placement', handling both "-" and "–"
-df <- df %>%
-  separate(name, into = c("name", "placement"), sep = "-|–", extra = "merge") %>%
-  drop_na() %>%
-  mutate(placement = if_else(str_detect(placement, "^\\b(\\w+|\\w+ \\w+) -"), 
-                             str_replace(placement, "^\\b(\\w+|\\w+ \\w+) - ", ""), 
-                             placement))
+final_table <- bind_rows(modified_tables)
 
-# Correct bugs
-df$name[156] <- paste(df$name[156], "young Shim ")
-df$placement[156] <- paste0("University of California, San Diego (Post-Doc)")
+final_table <- final_table %>%
+  filter(placement != "Placement")
 
 # Save ----
-write_xlsx(df, paste0(data, "/us/raw/upenn_raw.xlsx"))
+write_xlsx(final_table, paste0(data, "/us/raw/harvard_raw.xlsx"))
+
 

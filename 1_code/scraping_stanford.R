@@ -4,7 +4,7 @@
 # Author: Pablo Garcia-Guzman
 
 # This script: 
-#   Scrapes data for UPenn
+#   Scrapes data for Stanford
 #--------------------------------------------------------------#
 
 #------------------------- 0. Load packages, set paths ------------------------#
@@ -51,36 +51,49 @@ fig <- paste0(dir, "2_figures/")
 #---------------------------- 1. Script starts --------------------------------#
 
 # Load data ---- 
-web <- "https://economics.sas.upenn.edu/graduate/prospective-students/placement-information"
-web <- read_html(web)
+url <- "https://economics.stanford.edu/student-placement"
+starting_year <- 2023 
+total_pages <- 11 
 
-names <- web %>% html_nodes("a,p") %>% html_text()
-names <- as.data.frame(names)
-names <- names %>% filter(row_number() > 44) # removed unused lines
-names <- names %>% filter(row_number() < 290) # removed unused lines
+# Function to extract tables from a given URL
+extract_tables <- function(url, year) {
+  web <- read_html(url)
+  tables <- web %>% html_nodes("table") %>% html_table()
+  
+  tables <- lapply(tables, function(table) {
+    table$Year <- year
+    return(table)
+  })
+  
+  return(tables)
+}
 
-df <- names %>%
-  rename(name = names)
+# Initialize an empty list to store tables
+all_tables <- list()
 
-# Identify and carry forward the year
-df <- df %>%
-  mutate(year = ifelse(grepl("PLACEMENT [0-9]{4}-[0-9]{4}", name), gsub("PLACEMENT ([0-9]{4})-[0-9]{4}", "\\1", name), NA)) %>%
-  fill(year, .direction = "down") %>%
-  filter(!is.na(year) & !grepl("PLACEMENT [0-9]{4}-[0-9]{4}", name)) %>%
-  mutate(year = as.numeric(year) + 1) 
+# Loop through each page and extract tables
+for (page in 0:total_pages) {
+  current_year <- starting_year - (page)
+  page_url <- paste0(url, "?page=%2C%2C", page) # Update this line based on the actual URL structure
+  page_tables <- extract_tables(page_url, current_year)
+  all_tables <- c(all_tables, page_tables)
+}
 
-# Separate the name into 'name' and 'placement', handling both "-" and "–"
-df <- df %>%
-  separate(name, into = c("name", "placement"), sep = "-|–", extra = "merge") %>%
-  drop_na() %>%
-  mutate(placement = if_else(str_detect(placement, "^\\b(\\w+|\\w+ \\w+) -"), 
-                             str_replace(placement, "^\\b(\\w+|\\w+ \\w+) - ", ""), 
-                             placement))
+# Combine all tables into a single data frame
+combined_tables <- bind_rows(all_tables)
 
-# Correct bugs
-df$name[156] <- paste(df$name[156], "young Shim ")
-df$placement[156] <- paste0("University of California, San Diego (Post-Doc)")
+# View the combined data
+print(combined_tables)
+
+final_data <- combined_tables %>%
+  rename(name = Name,
+         field = `Fields of Study`,
+         placement = Placement,
+         year = Year) %>%
+  filter(placement != "") %>%
+  mutate(field = mapply(function(field, name) gsub(name, "", field), field, name))
 
 # Save ----
-write_xlsx(df, paste0(data, "/us/raw/upenn_raw.xlsx"))
+write_xlsx(final_data, paste0(data, "/us/raw/stanford_raw.xlsx"))
+
 

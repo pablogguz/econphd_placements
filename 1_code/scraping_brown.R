@@ -4,7 +4,7 @@
 # Author: Pablo Garcia-Guzman
 
 # This script: 
-#   Scrapes data for UCLA
+#   Scrapes data for Brown
 #--------------------------------------------------------------#
 
 #------------------------- 0. Load packages, set paths ------------------------#
@@ -23,8 +23,7 @@ packages_to_load <- c("rvest",
                       "scales",
                       "webshot",
                       "htmlwidgets",
-                      "httr",
-                      "purrr") 
+                      "httr") 
 
 package.check <- lapply(
   packages_to_load,
@@ -51,36 +50,42 @@ fig <- paste0(dir, "2_figures/")
 #---------------------------- 1. Script starts --------------------------------#
 
 # Load data ---- 
-url <- "https://economics.ucla.edu/graduate/graduate-profiles/graduate-placement-history/"
+url <- "https://economics.brown.edu/academics/graduate/job-placement-results"
 web <- read_html(url)
 
-# Extract h4 elements (years) and the tables that follow them
-years <- web %>% html_nodes("h4")
-table <- web %>% html_nodes("table")
+# Select each 'accordion_item' and extract data
+accordion_items <- web %>% html_nodes(".accordion_item")
 
 # Initialize an empty data frame for the final output
-final_data <- data.frame(year = character(), name = character(), placement = character(), stringsAsFactors = FALSE)
+final_data <- data.frame(year = character(), details = character(), stringsAsFactors = FALSE)
 
-# Iterate through each year and corresponding table
-for (i in seq_along(years)) {
-  # Extract the year, assuming it's in a four-digit format
-  year_text <- years[i] %>% html_text() %>% str_trim()
-  year <- str_extract(year_text, "\\d{4}")
+# Iterate through each accordion item
+for (item in accordion_items) {
+  # Extract the year from the item's title or a specific part
+  year <- item %>% html_node(".accordion_trigger") %>% html_text()
   
-  table <- tables[i] %>% html_table(fill = TRUE)
+  # Extract all placement details (each 'li' element) from the item
+  placement_details <- item %>% html_nodes("li")
   
-  # Check if the table is not empty and has more than one row (header and data)
-  if (!is.null(table) && nrow(table[[1]]) > 1) {
-    table_data <- table[[1]]
-
-    # Add the year to the table and combine with the final data
-    table_data <- table_data %>% mutate(year = year)
-    final_data <- rbind(final_data, table_data)
+  # Iterate through each placement detail and add to the final data frame
+  for (detail in placement_details) {
+    full_text <- detail %>% html_text() %>% str_trim()
+    strong_elements <- detail %>% html_nodes("strong") %>% html_text()
+    placement <- paste(strong_elements, collapse = " ") %>% str_trim()
+    name <- str_replace(full_text, fixed(placement), "") %>% str_trim()
+    
+    # Add to the final data frame
+    final_data <- rbind(final_data, data.frame(year, name, placement, stringsAsFactors = FALSE))
   }
 }
 
+# View the final data frame
+print(final_data)
+
 final_data <- final_data %>%
-  rename(placement = X2,
-         name = X1)
+  mutate(name = str_replace(name, "[-]([^-]*)$", "\\1"))
+
 # Save ----
-write_xlsx(final_data, paste0(data, "/us/raw/ucla_raw.xlsx"))
+write_xlsx(final_data, paste0(data, "/us/raw/brown_raw.xlsx"))
+
+

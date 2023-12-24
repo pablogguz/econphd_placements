@@ -4,7 +4,7 @@
 # Author: Pablo Garcia-Guzman
 
 # This script: 
-#   Scrapes data for UCLA
+#   Scrapes data for Minnesota
 #--------------------------------------------------------------#
 
 #------------------------- 0. Load packages, set paths ------------------------#
@@ -51,12 +51,13 @@ fig <- paste0(dir, "2_figures/")
 #---------------------------- 1. Script starts --------------------------------#
 
 # Load data ---- 
-url <- "https://economics.ucla.edu/graduate/graduate-profiles/graduate-placement-history/"
+url <- "https://cla.umn.edu/economics/graduate/job-placement-achievements"
 web <- read_html(url)
 
 # Extract h4 elements (years) and the tables that follow them
-years <- web %>% html_nodes("h4")
-table <- web %>% html_nodes("table")
+years <- web %>% html_nodes("div.field.field--name-field-title.field--type-string.field--label-hidden.field__item")
+
+tables <- web %>% html_nodes("table")
 
 # Initialize an empty data frame for the final output
 final_data <- data.frame(year = character(), name = character(), placement = character(), stringsAsFactors = FALSE)
@@ -72,15 +73,19 @@ for (i in seq_along(years)) {
   # Check if the table is not empty and has more than one row (header and data)
   if (!is.null(table) && nrow(table[[1]]) > 1) {
     table_data <- table[[1]]
-
+    z = 2024 - i
     # Add the year to the table and combine with the final data
-    table_data <- table_data %>% mutate(year = year)
+    table_data <- table_data %>% mutate(year = z)
     final_data <- rbind(final_data, table_data)
   }
 }
 
 final_data <- final_data %>%
-  rename(placement = X2,
-         name = X1)
+  rename(placement = Institution,
+         name = Name,
+         field = Position) %>%
+  mutate(placement = paste0(field, ", ",placement)) %>%
+  select(-field) # no info on fields
+
 # Save ----
-write_xlsx(final_data, paste0(data, "/us/raw/ucla_raw.xlsx"))
+write_xlsx(final_data, paste0(data, "/us/raw/minnesota_raw.xlsx"))

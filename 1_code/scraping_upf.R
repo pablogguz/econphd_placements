@@ -4,7 +4,7 @@
 # Author: Pablo Garcia-Guzman
 
 # This script: 
-#   Scrapes data for UCLA
+#   Scrapes data for UPF
 #--------------------------------------------------------------#
 
 #------------------------- 0. Load packages, set paths ------------------------#
@@ -51,36 +51,48 @@ fig <- paste0(dir, "2_figures/")
 #---------------------------- 1. Script starts --------------------------------#
 
 # Load data ---- 
-url <- "https://economics.ucla.edu/graduate/graduate-profiles/graduate-placement-history/"
+url <- "https://www.upf.edu/web/econ/alumni-and-placement"
 web <- read_html(url)
 
-# Extract h4 elements (years) and the tables that follow them
-years <- web %>% html_nodes("h4")
-table <- web %>% html_nodes("table")
+tables <- web %>% html_nodes("tbody")
 
-# Initialize an empty data frame for the final output
-final_data <- data.frame(year = character(), name = character(), placement = character(), stringsAsFactors = FALSE)
+# Initialize an empty list to store each table's data frame
+list_of_dfs <- list()
 
-# Iterate through each year and corresponding table
-for (i in seq_along(years)) {
-  # Extract the year, assuming it's in a four-digit format
-  year_text <- years[i] %>% html_text() %>% str_trim()
-  year <- str_extract(year_text, "\\d{4}")
+# Starting year for the first table
+starting_year <- 2023
+
+# Loop through each table and extract data
+for (i in seq_along(tables)) {
+  # Calculate the year based on the table index
+  year <- as.character(starting_year - (i - 1))
   
-  table <- tables[i] %>% html_table(fill = TRUE)
+  # Extract names and placements from the table
+  names <- tables[[i]] %>% html_nodes("tr td:first-child") %>% html_text() %>% trimws()
+  names <- names[-1]
+  placements <- tables[[i]] %>% html_nodes("tr td:nth-child(2)") %>% html_text() %>% trimws()
   
-  # Check if the table is not empty and has more than one row (header and data)
-  if (!is.null(table) && nrow(table[[1]]) > 1) {
-    table_data <- table[[1]]
-
-    # Add the year to the table and combine with the final data
-    table_data <- table_data %>% mutate(year = year)
-    final_data <- rbind(final_data, table_data)
-  }
+  years <- rep(year, length(names))
+  
+  # Create a DataFrame
+  df <- data.frame(name = names, year = year, placement = placements, stringsAsFactors = FALSE)
+  
+  # Append the data frame to the list
+  list_of_dfs[[i]] <- df
 }
 
+# Combine all data frames into one
+final_data <- bind_rows(list_of_dfs)
+
 final_data <- final_data %>%
-  rename(placement = X2,
-         name = X1)
+  mutate(placement = gsub("<!--td {border: 1px solid #cccccc;}br {mso-data-placement:same-cell;}-->", "", placement, fixed = TRUE),
+         name = gsub("<!--td {border: 1px solid #cccccc;}br {mso-data-placement:same-cell;}-->", "", name, fixed = TRUE)) %>%
+  mutate(name = str_trim(name),
+         placement = str_trim(placement)) %>%
+  filter(placement != "") 
+
 # Save ----
-write_xlsx(final_data, paste0(data, "/us/raw/ucla_raw.xlsx"))
+write_xlsx(final_data, paste0(data, "/eu/raw/upf_raw.xlsx"))
+
+
+

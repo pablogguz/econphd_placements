@@ -4,12 +4,12 @@
 # Author: Pablo Garcia-Guzman
 
 # This script: 
-#   Loads all the packages needed to run the analysis
-#   Sets the paths
+#   Scrapes data for Cornell
 #--------------------------------------------------------------#
 
-# Load packages
+#------------------------- 0. Load packages, set paths ------------------------#
 
+# Load packages ----
 packages_to_load <- c("rvest", 
                       "stringr",  
                       "dplyr", 
@@ -47,3 +47,33 @@ data <- paste0(dir, "0_data/")
 code <- paste0(dir, "1_code/")
 fig <- paste0(dir, "2_figures/")
 
+#---------------------------- 1. Script starts --------------------------------#
+
+# Load data ---- 
+url <- "https://economics.cornell.edu/historical-placement-phd-students"
+web <- read_html(url)
+
+# Extract the table
+table <- web %>% html_table()
+
+placement_data <- table[[1]]
+
+print(placement_data)
+
+names(placement_data) <- tolower(names(placement_data))
+
+placement_data <- placement_data %>%
+  rename(placement = `position or affiliation`,
+         field = `research area`) %>%
+  select(-program) %>%
+  filter(placement != "")
+
+# Remove duplicated values in 'placement' column (bug), since they should be empty if field is missing
+placement_data <- placement_data %>%
+  mutate(field = ifelse(field == placement, NA, field)) %>%
+  mutate(field = ifelse(field == "", NA, field))
+
+# Save ----
+write_xlsx(placement_data, paste0(data, "/us/raw/cornell_raw.xlsx"))
+
+  

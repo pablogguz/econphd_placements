@@ -4,7 +4,7 @@
 # Author: Pablo Garcia-Guzman
 
 # This script: 
-#   Scrapes data for UCLA
+#   Scrapes data for Maryland
 #--------------------------------------------------------------#
 
 #------------------------- 0. Load packages, set paths ------------------------#
@@ -51,12 +51,16 @@ fig <- paste0(dir, "2_figures/")
 #---------------------------- 1. Script starts --------------------------------#
 
 # Load data ---- 
-url <- "https://economics.ucla.edu/graduate/graduate-profiles/graduate-placement-history/"
+url <- "https://www.econ.umd.edu/graduate/job-placement"
 web <- read_html(url)
 
-# Extract h4 elements (years) and the tables that follow them
+# Extract h3 elements (years) and the tables that follow them
 years <- web %>% html_nodes("h4")
-table <- web %>% html_nodes("table")
+tables <- web %>% html_nodes("h4 + table")
+
+# Keep only data from 2012 onwards (data for previous periods is problematic)
+years <- years[1:12]
+tables <- tables[1:12]
 
 # Initialize an empty data frame for the final output
 final_data <- data.frame(year = character(), name = character(), placement = character(), stringsAsFactors = FALSE)
@@ -71,8 +75,10 @@ for (i in seq_along(years)) {
   
   # Check if the table is not empty and has more than one row (header and data)
   if (!is.null(table) && nrow(table[[1]]) > 1) {
-    table_data <- table[[1]]
-
+    # Set the names of the table to be the first row and then remove the first row
+    names(table[[1]]) <- as.character(unlist(table[[1]][1, ]))
+    table_data <- table[[1]][-1, ]
+    
     # Add the year to the table and combine with the final data
     table_data <- table_data %>% mutate(year = year)
     final_data <- rbind(final_data, table_data)
@@ -80,7 +86,9 @@ for (i in seq_along(years)) {
 }
 
 final_data <- final_data %>%
-  rename(placement = X2,
-         name = X1)
+  rename(placement = `Job Placement`,
+         name = Name,
+         field = `Student's Area of Concentration`)
+
 # Save ----
-write_xlsx(final_data, paste0(data, "/us/raw/ucla_raw.xlsx"))
+write_xlsx(final_data, paste0(data, "/us/raw/maryland_raw.xlsx"))

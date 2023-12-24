@@ -1,16 +1,16 @@
-# Placement outcomes for PhD graduates in Economics
+# Placement outcomes for PhD graduates in economics
 
-I construct a novel dataset with individual-level data on PhD placement outcomes over the period 2012-2022 for a total of 24 economics departments
-worldwide. Specifically, data is extracted directly from the relevant departmental websites using a mixture of both code and no-code web scraping tools. 
+I construct a novel dataset with individual-level information on PhD placement outcomes for a total of 26 economics departments worldwide. Data is extracted directly from the relevant departmental websites through web-scraping.
 
-Placements are then sorted into 8 different categories using a text classification algorithm, namely tenure-track (academic) positions, 
-post-docs, central banks, international organizations, government, think-tanks, private sector, and other (academic) positions.
+Placements are then sorted into 7 different categories using a text classification algorithm, namely **tenure-track positions, 
+post-docs and other academic positions, central banks, international organizations, government, think-tanks and non-profits,** and **private sector**.
 
-This GitHub repository hosts the codes for replicating the analysis. A one-click code for running the full sequence of scripts can be found in the dofile `_master.do`.
+This GitHub repository hosts the code for replicating the analysis. 
+
+![Data availability](../2_figures/data_availability.png)
 
 Notes:
-* As the way in which placements are reported is heterogeneous across departments, the text classification algorithm is also department-specific. For instance, 
-some departments distinctively tag their tenure-track placements with the relevant job title (i.e., *Assistant Professor*), whereas in other cases tenure-track placements must be identified based on the abscence of tags that identify non-tenure-track academic placements (e.g., post-docs).
-* Chicago and Northwestern already report their placements following a similar classification to ours. In these two cases, placements are directly sorted into our categories by hand without using the text classification algorithm.
-
+* MIT has stoped publishing their placement record on their website. The data for MIT in this dataset was retrieved in 2022Q2 (from the previous edition), when it was still available
+* Chicago discloses their placements in a PDF document available on their website. In 2023, they removed data for years prior to 2019 from the publicly available document. The data for Chicago up to 2018 in this dataset was retrieved in 2022Q2 (from the previous edition)
+* To discern between tenure-track and post-docs placements, the text classification algorithm requires that post-docs are explicitly flagged. Unfortunately, this is not always the case -- some schools omit this information from the placement outcome, often making tenure-track positions and post-docs undistinguishable. Due to this, the share of tenure-track placements is expected to be _upward-biased_
 

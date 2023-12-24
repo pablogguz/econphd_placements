@@ -4,7 +4,7 @@
 # Author: Pablo Garcia-Guzman
 
 # This script: 
-#   Scrapes data for UCLA
+#   Scrapes data for UCSD
 #--------------------------------------------------------------#
 
 #------------------------- 0. Load packages, set paths ------------------------#
@@ -23,8 +23,7 @@ packages_to_load <- c("rvest",
                       "scales",
                       "webshot",
                       "htmlwidgets",
-                      "httr",
-                      "purrr") 
+                      "httr") 
 
 package.check <- lapply(
   packages_to_load,
@@ -51,36 +50,37 @@ fig <- paste0(dir, "2_figures/")
 #---------------------------- 1. Script starts --------------------------------#
 
 # Load data ---- 
-url <- "https://economics.ucla.edu/graduate/graduate-profiles/graduate-placement-history/"
+url <- "https://economics.ucsd.edu/graduate-program/jobmarket-tab/placement-history.html"
 web <- read_html(url)
 
-# Extract h4 elements (years) and the tables that follow them
-years <- web %>% html_nodes("h4")
-table <- web %>% html_nodes("table")
+# Extract the table
+tables <- web %>% html_nodes("table")
 
 # Initialize an empty data frame for the final output
 final_data <- data.frame(year = character(), name = character(), placement = character(), stringsAsFactors = FALSE)
 
 # Iterate through each year and corresponding table
-for (i in seq_along(years)) {
-  # Extract the year, assuming it's in a four-digit format
-  year_text <- years[i] %>% html_text() %>% str_trim()
-  year <- str_extract(year_text, "\\d{4}")
+for (i in seq_along(tables)) {
   
   table <- tables[i] %>% html_table(fill = TRUE)
   
-  # Check if the table is not empty and has more than one row (header and data)
   if (!is.null(table) && nrow(table[[1]]) > 1) {
-    table_data <- table[[1]]
-
+    table_data <- table[[1]][, 2:4] 
+    
+    z = 2024 - i
+    
+    # Rename the first two columns
+    names(table_data)[1:3] <- c("name", "field", "placement")
+    
     # Add the year to the table and combine with the final data
-    table_data <- table_data %>% mutate(year = year)
+    table_data <- table_data %>% mutate(year = z)
     final_data <- rbind(final_data, table_data)
   }
 }
 
 final_data <- final_data %>%
-  rename(placement = X2,
-         name = X1)
+  filter(placement != "")
+
 # Save ----
-write_xlsx(final_data, paste0(data, "/us/raw/ucla_raw.xlsx"))
+write_xlsx(final_data, paste0(data, "/us/raw/ucsd_raw.xlsx"))
+
