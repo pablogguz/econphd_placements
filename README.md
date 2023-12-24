@@ -7,7 +7,7 @@ post-docs and other academic positions, central banks, international organizatio
 
 This GitHub repository hosts the code for replicating the analysis. 
 
-![Data availability](../2_figures/data_availability.png)
+![Data availability](2_figures/data_availability.png)
 
 Notes:
 * MIT has stoped publishing their placement record on their website. The data for MIT in this dataset was retrieved in 2022Q2 (from the previous edition), when it was still available
