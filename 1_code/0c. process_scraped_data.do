@@ -27,7 +27,10 @@ set scheme cleanplots
 	lab var region "Region"
 	
 	lab var name "Name of candidate"
-	lab var field "Field of candidate"
+	lab var field "Field of candidate (categories)"
+	
+	lab var primary_field "Primary field"
+	lab var secondary_field "Secondary field"
 	
 	lab var year "Year of placement"
 	
