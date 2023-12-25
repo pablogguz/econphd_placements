@@ -1,5 +1,5 @@
 
-[![lastupdated](https://img.shields.io/badge/Last_updated-December_2023-blue.svg)](https://shields.io/) [![version](https://img.shields.io/badge/version-2.0-orange.svg)](https://shields.io/)
+[![lastupdated](https://img.shields.io/badge/Last_updated-December_2023-blue.svg)](https://shields.io/)   [![version](https://img.shields.io/badge/version-2.0-orange.svg)](https://shields.io/)
 
 
 # Placement outcomes for PhD graduates in economics
