@@ -12,7 +12,7 @@ cap log close
 set scheme cleanplots
 
 **# Load data 
-	use "${all}/scraped_data_full_wfield.dta", clear
+	use "${all}/scraped_data_raw_wfield.dta", clear
 	
 **# Clean
 	format placement %-50s
@@ -27,7 +27,7 @@ set scheme cleanplots
 	lab var region "Region"
 	
 	lab var name "Name of candidate"
-	lab var field "Field of candidate (categories)"
+	lab var field "Field of candidate (categories, based on primary field)"
 	
 	lab var primary_field "Primary field"
 	lab var secondary_field "Secondary field"
@@ -86,4 +86,4 @@ set scheme cleanplots
 	drop dup n 
 
 **# Save
-	save "${all}/scraped_data_full_proc.dta", replace
+	save "${all}/scraped_data_proc.dta", replace

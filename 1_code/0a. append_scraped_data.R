@@ -103,8 +103,8 @@ classify_placement <- function(df, debug = FALSE) {
   postdocs_keywords <- c("Post-doc", "Postdoc", "Postdoctoral", "Post-doctoral", "postdoc", "Post Doc",
                          "Visiting", "Post Doctoral", "Post-doctural", "Max Planck", "(Post-doc)", "PostDoc",
                          "Post-doctorate",  "Research Fellow, University", "teaching fellow",
-                         "career development fellowship")
-  postdocsnot_keywords <- c("after ", "before", "then") # account for the fact that some placements involve a post-doc and then the tenure-track position
+                         "career development fellowship", "Career development fellow", "max weber fellow")
+  postdocsnot_keywords <- c("after ", "before", "then", "assistant professor", "tenure") # account for the fact that some placements involve a post-doc and then the tenure-track position
   
   tenure_track_keywords <- c("Assistant Professor", "Professor", "Lecturer", 
                              "School of", "Business School", "University", 
@@ -134,8 +134,8 @@ classify_placement <- function(df, debug = FALSE) {
                              "Weill Cornell Medicine", "Korean Advanced Institute for Science & Technology", "Indiana Univiversity",
                              "Indian Statistical Institute", "Hong Kong Univ", "ISET in Tbilisi, Georgia", "Georgia Tech",
                              "Northeastern", "West Point", "Yale", "UCSC", "Torcuato di Tella", "HKU", "Clemson", "NUS",
-                             "Stockholm Institute for International Economic Studies")
-  
+                             "Stockholm Institute for International Economic Studies", "Rutgers")
+
   intl_org_keywords <- c("World Bank", "IMF", "UNU Wider", "International Monetary Fund", 
                          "Inter American Development Bank", "European Bank for Reconstruction and Development", 
                          "OECD", "Bank for International Settlements", "EBRD", "IDB", "IADB",
@@ -186,7 +186,7 @@ classify_placement <- function(df, debug = FALSE) {
                               ority",
                               "Bank of Canada", "Bank of Chile", 'Bank of Korea', "Bank of Mexico", "FED", 
                               "Bank of Italy", "Hong Kong Monetary Authority", "Federal Bank Reserve", 
-                              "Bank of Norway", "Norges Bank", "GiveWell", "Banco de Mexico", "Bank of England", 
+                              "Bank of Norway", "Norges Bank", "Banco de Mexico", "Bank of England", 
                               "Federal Board", "Fed Board", "Banco de", "Banca d'Italia", "Bundesbank", "Banque de France",
                               "Banco central", "Nationalbank", "Swedish Riksbank")
   
@@ -200,7 +200,8 @@ classify_placement <- function(df, debug = FALSE) {
                             "Fondazione Bruno Kessler", "Korea Information Strategy Development Institute", "Research Triangle Inst", "Motu Economics",
                             "Netzwerk  Steuergerechtigkeit (NGO-Berlin)", "SPHERE Institute", "The Institute for the Study of Labor",
                             "Pew Research", "Recividiz", "Institute for Fiscal Studies", "Institute of Fiscal Studies",
-                            "Instituto para la Planeacion del Desarrollo")
+                            "Instituto para la Planeacion del Desarrollo", "GiveWell", "Recidiviz", "NGO-Berlin",
+                            "Center on Budget and Policy Priorities", "German Economic Institute")
   
   government_keywords <- c("Treasury", "Department of", "Federal Trade Commission", "Ministry", "Census Bureau", "Securities and Exchange Commission",
                            "Legislative", "Treasury", "Federal Trade Commission", "Congressional Budget Office","Joint Committee on Taxation", 
@@ -222,7 +223,8 @@ classify_placement <- function(df, debug = FALSE) {
                            "German Council of Economic Experts", "US Dept. of Agriculture", "Agency for Healthcare Research and Quality",
                            "Fraunhofer Institute for Applied Information Technology FIT", "Fraunhofer Center for International Management and Knowledge",
                            "GAO Financial Markets", "Competition and Market Authority", "Defra", "IPEA",
-                           "Office of Fair Trading", "Department for International Trade", "Civil Service")
+                           "Office of Fair Trading", "Department for International Trade", "Civil Service", "National Education Association",
+                           "Agency for Health Care Research and Quality")
   
   # Function to determine placement type
   determine_placement_type <- function(placement) {
@@ -297,4 +299,4 @@ other <- all_data_classified %>%
 # Save ----
 all_data_classified <- all_data_classified %>%
   filter(placement_type != "other")
-write_dta(all_data_classified, paste0(data, "all/scraped_data_full.dta"))
+write_dta(all_data_classified, paste0(data, "all/scraped_data_raw.dta"))

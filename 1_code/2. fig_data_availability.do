@@ -12,7 +12,7 @@ cap log close
 set scheme cleanplots
 
 **# Load data 
-	use "${all}/scraped_data_full_proc.dta", clear
+	use "${all}/scraped_data_proc.dta", clear
 	
 * Cosmetic adjustments
 	replace inst = proper(inst)

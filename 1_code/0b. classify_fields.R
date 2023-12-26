@@ -51,7 +51,7 @@ fig <- paste0(dir, "2_figures/")
 #------------------------------ 1. Script starts ------------------------------#
 
 # Load data ---- 
-data_raw <- read_dta(paste0(data, "all/scraped_data_full.dta"))
+data_raw <- read_dta(paste0(data, "all/scraped_data_raw.dta"))
 
 data_field <- data_raw %>%
   filter(field != "")
@@ -118,12 +118,14 @@ classify_field <- function(df) {
 data_field_classified <- classify_field(data_field)
 
 all_data_classified <- data_raw %>%
-  mutate(field = ifelse(inst == "harvard" & year <= 2014, "", field)) %>%
+  mutate(field = ifelse(inst == "harvard" & year <= 2014, "", field)) %>% # No info on fields for Harvard before 2014 (it's actually the name of the program, i.e. PEG, Business Econ, etc.)
   filter(field == "") %>%
   bind_rows(data_field_classified) %>%
-  select(-field)
+  select(-field) %>%
+  mutate(primary_field = str_trim(primary_field),
+         secondary_field = str_trim(secondary_field))
 
 # Save ----
-write_dta(all_data_classified, paste0(data, "all/scraped_data_full_wfield.dta"))
+write_dta(all_data_classified, paste0(data, "all/scraped_data_raw_wfield.dta"))
 
 

@@ -12,7 +12,7 @@ cap log close
 set scheme cleanplots
 
 **# Load data
-	use "${all}/scraped_data_full_proc.dta", clear
+	use "${all}/scraped_data_proc.dta", clear
 
 **# Cosmetic adjustments
 	bys field_type: keep if _N >= 20  // keep fields w/ at least 20 obs.
