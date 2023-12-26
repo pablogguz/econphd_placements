@@ -73,7 +73,7 @@ set scheme cleanplots
 	restore
 	
 	append using `chicago'
-		
+ 
 **# Check duplicates
 	bys name inst: g dup = _N 
 	replace dup = . if name == ""
