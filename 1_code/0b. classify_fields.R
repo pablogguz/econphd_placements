@@ -114,7 +114,7 @@ classify_field <- function(df) {
   return(df)
 }
 
-# Apply the function to your data
+# Apply the function 
 data_field_classified <- classify_field(data_field)
 
 all_data_classified <- data_raw %>%

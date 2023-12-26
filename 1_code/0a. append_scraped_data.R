@@ -278,11 +278,8 @@ classify_placement <- function(df, debug = FALSE) {
   return(df)
 }
 
-# Apply the function to your data
+# Apply the function 
 all_data_classified <- classify_placement(all_data, debug = TRUE)
-
-# View the classified data
-print(all_data_classified)
 
 all_data_classified <- all_data_classified %>%
   select(year, placement, placement_type, everything())
