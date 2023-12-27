@@ -72,7 +72,7 @@ set scheme cleanplots
 		   (rbar y_min_field y_max_field order, barw(.5) horizontal color(red%50) lcolor(red%0) yaxis(2))
 		   (sc order y_max_overall, mlabel(y_max_overall) msymbol(none) mlabcolor(black%50) mlabsize(vsmall))
 		   (sc order y_min_overall, mlabel(y_min_overall) msymbol(none) mlabcolor(black%50) mlabposition(9) mlabsize(vsmall)),
-		    ylab(none, nogrid nolabels noticks) ylab(1(1)28, val angle(0) nogrid axis(2) labsize(vsmall))
+		    ylab(none, nogrid nolabels noticks) ylab(1(1)29, val angle(0) nogrid axis(2) labsize(vsmall))
 			ytitle("") ytitle("", axis(2))
 			xtitle("Data availability (years)", size(small))
 		    xlab(1998(5)2023, nogrid labsize(vsmall))

@@ -4,7 +4,7 @@
 
 # Placement outcomes for PhD graduates in economics
 
-I construct a novel dataset with individual-level information on PhD placement outcomes for a total of 28 economics departments worldwide. Data is extracted directly from the relevant departmental websites through web-scraping.
+I construct a novel dataset with individual-level information on PhD placement outcomes for a total of 29 economics departments worldwide. Data is extracted directly from the relevant departmental websites through web-scraping.
 
 Placements are then sorted into 7 different categories using a text classification algorithm, namely **tenure-track positions, 
 post-docs and other academic positions, central banks, international organizations, government, think-tanks and non-profits,** and **private sector**.

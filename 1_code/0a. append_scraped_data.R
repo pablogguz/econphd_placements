@@ -141,7 +141,8 @@ classify_placement <- function(df, debug = FALSE) {
                          "OECD", "Bank for International Settlements", "EBRD", "IDB", "IADB",
                          "Development Impact Evaluation Initiative", "European Commission", "Organization for Economic Co-operation and Development",
                          "United Nations", "WorldBank", "Organisation for Economic Co-operation and Development",
-                         "European Stability Mechanism", "European Securities and Markets Authority")
+                         "European Stability Mechanism", "European Securities and Markets Authority",
+                         "Organization for Economic Cooperation and Development")
   
   private_sector_keywords <- c("Consultant", "Data Scientist", "Associate", "Bank", "Group", "Company", "Investment", "Capital",
                                "Deliveroo", "Uber", "Amazon", "Luohan Academy", "Vivid Economics", "Academy", "Cornerstone",
@@ -180,7 +181,9 @@ classify_placement <- function(df, debug = FALSE) {
                                "Secretariat Economists", "ESMT Competition Analysis", "Korean Advanced Institute of Science and Technology",
                                "Legal Economics", "The Clearing House", "Worthix", "United Parcel Service", "LG Economic Research", 
                                "Economics Analysis, Los Angeles, Economist", "Ashenfelter", "Planbase", "CVS Health", "(ING)", "Happy Elements",
-                               "JPMorgan", "Indeed", "Entrepreneur First")
+                               "JPMorgan", "Indeed", "Entrepreneur First", "Credit Suisse", "Swiss Re", "Lupa Textiles", "Zalando",
+                               "Baloise Insurance", "Marshall Wace", "Unbound Potential", "Wüest Partner", "Swiss Life", "Sanitas",
+                               "BKW Energie AG")
   
   central_banks_keywords <- c("Bank of Spain", "Federal Reserve", "FRB", "Central Bank", "Monetary Auth
                               ority",
@@ -224,7 +227,7 @@ classify_placement <- function(df, debug = FALSE) {
                            "Fraunhofer Institute for Applied Information Technology FIT", "Fraunhofer Center for International Management and Knowledge",
                            "GAO Financial Markets", "Competition and Market Authority", "Defra", "IPEA",
                            "Office of Fair Trading", "Department for International Trade", "Civil Service", "National Education Association",
-                           "Agency for Health Care Research and Quality")
+                           "Agency for Health Care Research and Quality", "Swiss Competition Commission", "Agroscope", "State Secretariat for Education")
   
   # Function to determine placement type
   determine_placement_type <- function(placement) {

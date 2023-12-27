@@ -50,7 +50,7 @@ set scheme cleanplots
 		   || bar c uni2 , barw(0.8) color(midblue*0.2)
 		   || bar b uni2 , barw(0.8) color(midblue*0.4)
 		   || bar a uni2 , barw(0.8) color(midblue*0.8)
-		   xlabel(1(1)28, valuelabel angle(45) labcolor(black) labsize(vsmall))
+		   xlabel(1(1)29, valuelabel angle(45) labcolor(black) labsize(vsmall))
 		   xtitle("") ytitle("Share of placements", size(small))
 		   ylab(0(0.2)1)
 		   legend(row(4) pos(4) size(vsmall) symxsize(vsmall) order(4 "Tenure-track" 3 "Post-doc"
