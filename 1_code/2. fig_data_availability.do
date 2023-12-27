@@ -67,8 +67,8 @@ set scheme cleanplots
 	
 **# Export chart
 	#d;
-	twoway (rbar y_min y_max order, barw(.5) horizontal color("110 201 245"%0)) // phantom axis
-		   (rbar y_min y_max order, barw(.5) horizontal color("62 184 240"%100) lcolor(midblue%0) yaxis(2))
+	twoway (rbar y_min y_max order, barw(.5) horizontal color(midblue%0)) // phantom axis
+		   (rbar y_min y_max order, barw(.5) horizontal color(midblue%50) lcolor(midblue%0) yaxis(2))
 		   (rbar y_min_field y_max_field order, barw(.5) horizontal color(red%50) lcolor(red%0) yaxis(2))
 		   (sc order y_max_overall, mlabel(y_max_overall) msymbol(none) mlabcolor(black%50) mlabsize(vsmall))
 		   (sc order y_min_overall, mlabel(y_min_overall) msymbol(none) mlabcolor(black%50) mlabposition(9) mlabsize(vsmall)),
