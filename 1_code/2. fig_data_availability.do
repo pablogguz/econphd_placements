@@ -54,7 +54,7 @@ set scheme cleanplots
 	drop _m 
 	
 	g diff = y_max - y_min
-	sort diff 
+	gsort -y_min diff 
 	g order = _n 
 	labmask order, values(inst)
 
