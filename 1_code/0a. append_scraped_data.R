@@ -104,7 +104,8 @@ classify_placement <- function(df, debug = FALSE) {
                          "Visiting", "Post Doctoral", "Post-doctural", "Max Planck", "(Post-doc)", "PostDoc",
                          "Post-doctorate",  "Research Fellow, University", "teaching fellow",
                          "career development fellowship", "Career development fellow", "max weber fellow")
-  postdocsnot_keywords <- c("after ", "before", "then", "assistant professor", "tenure") # account for the fact that some placements involve a post-doc and then the tenure-track position
+  postdocsnot_keywords <- c("after ", "before", "then", "assistant professor", "tenure", "post-doc 2022-2023",
+                            "post-doc 2018-19", "post-doc 2022-23", "post doc 2018-2019", "post-doc 2018-2019") # account for the fact that some placements involve a post-doc and then the tenure-track position
   
   tenure_track_keywords <- c("Assistant Professor", "Professor", "Lecturer", 
                              "School of", "Business School", "University", 
@@ -134,7 +135,7 @@ classify_placement <- function(df, debug = FALSE) {
                              "Weill Cornell Medicine", "Korean Advanced Institute for Science & Technology", "Indiana Univiversity",
                              "Indian Statistical Institute", "Hong Kong Univ", "ISET in Tbilisi, Georgia", "Georgia Tech",
                              "Northeastern", "West Point", "Yale", "UCSC", "Torcuato di Tella", "HKU", "Clemson", "NUS",
-                             "Stockholm Institute for International Economic Studies", "Rutgers")
+                             "Stockholm Institute for International Economic Studies", "Rutgers", "Dartmouth")
 
   intl_org_keywords <- c("World Bank", "IMF", "UNU Wider", "International Monetary Fund", 
                          "Inter American Development Bank", "European Bank for Reconstruction and Development", 
