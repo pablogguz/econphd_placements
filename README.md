@@ -14,8 +14,8 @@ This GitHub repository hosts the code for replicating the data construction. The
 ![Data availability](2_figures/data_availability.png)
 
 Notes:
-* MIT has stoped publishing their placement record on their website. The data for MIT in this dataset was retrieved in 2022Q2 (from the previous edition), when it was still available
-* Chicago discloses their placements in a PDF document available on their website. In 2023, they removed data for years prior to 2019 from the publicly available document. The data for Chicago up to 2018 in this dataset was retrieved in 2022Q2 (from the previous edition)
+* MIT has stoped publishing their placement record on their website. Data for MIT in this dataset was retrieved in 2022Q2 (from the previous edition), when it was still available
+* Chicago discloses their placements in a PDF document available on their website. In 2023, they removed data for years prior to 2019 from the publicly available document. Dta for Chicago up to 2018 in this dataset was retrieved in 2022Q2 (from the previous edition)
 * In the previous edition of the dataset, placements were distributed across 8 distinct categories, with post-docs and other academic positions classified separately. The latest version consolidates these two into a single category
 * When multiple placement outcomes exist for a single graduate, and provided the graduate can be identified, only the initial placement is retained
 * A small number of placements (~0.3%) were removed from the final dataset due to their descriptions being too vague for categorization
